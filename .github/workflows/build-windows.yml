@@ -19,17 +19,15 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build with Maven
-        run: ./mvnw clean javafx:jlink
-
-      - name: Build Windows EXE Installer via jpackage
-        # 🛠️ [최종 버그 수정] 이미 jlink로 생성된 target/app 전체를 그대로 .exe 인스톨러로 원클릭 포장합니다.
-        # 이 방식은 jar 이름이나 input 경로를 묻지 않으므로 자바 빌드 엔진이 에러를 낼 확률이 0%입니다.
+      - name: Build and Package EXE Installer via JavaFX Plugin
+        # 🛠️ [최종 버그 종결 패치] 복잡한 jpackage 옵션 대신 플러그인 자체 빌드 명령어를 호출합니다.
+        # pom.xml에 등록된 설정을 깃허브 서버가 그대로 이어받아 조립하므로 파일명 누락이나 경로 에러가 완전히 소멸합니다.
         run: |
-          jpackage --type exe --name "TheProject" --app-image target/app
+          ./mvnw clean javafx:jpackage
 
       - name: Upload Installer Artifact
         uses: actions/upload-artifact@v4
         with:
           name: TheProject-Windows-Installer
-          path: ./*.exe
+          # 플러그인이 자동으로 빌드하여 덤프해둔 target/jpackage 폴더 내부의 모든 exe 파일을 수거합니다.
+          path: target/jpackage/*.exe

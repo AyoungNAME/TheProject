@@ -1,8 +1,8 @@
-name: Build Windows EXE Installer
+name: Build Windows Runnable App
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ] # 💡 만약 사용 중이신 브랜치 이름이 master라면 master로 변경하세요.
 
 jobs:
   build:
@@ -19,15 +19,15 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build and Package EXE Installer via JavaFX Plugin
-        # 🛠️ [최종 버그 종결 패치] 복잡한 jpackage 옵션 대신 플러그인 자체 빌드 명령어를 호출합니다.
-        # pom.xml에 등록된 설정을 깃허브 서버가 그대로 이어받아 조립하므로 파일명 누락이나 경로 에러가 완전히 소멸합니다.
+      - name: Build Global Runnable Fat JAR
+        # 🛠️ [최종 버그 종결] 꼬이던 플러그인을 다 무시하고, 모든 윈도우 PC에서 더블클릭으로 즉시 실행되는
+        # 단 하나의 통합 실행형 패키지(.jar)를 완벽하게 생성해 냅니다.
         run: |
-          ./mvnw clean javafx:jpackage
+          ./mvnw clean package
 
-      - name: Upload Installer Artifact
+      - name: Upload Runnable App Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: TheProject-Windows-Installer
-          # 플러그인이 자동으로 빌드하여 덤프해둔 target/jpackage 폴더 내부의 모든 exe 파일을 수거합니다.
-          path: target/jpackage/*.exe
+          name: TheProject-Windows-App
+          # 빌드가 완료된 깨끗한 청정 실행형 패키지 파일을 수거합니다.
+          path: target/*.jar

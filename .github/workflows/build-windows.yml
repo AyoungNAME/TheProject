@@ -2,7 +2,7 @@ name: Build Windows EXE Installer
 
 on:
   push:
-    branches: [ main ] # 💡 만약 사용하시는 브랜치 이름이 master라면 master로 변경하세요.
+    branches: [ main ]
 
 jobs:
   build:
@@ -23,9 +23,9 @@ jobs:
         run: ./mvnw clean javafx:jlink
 
       - name: Build Windows EXE Installer via jpackage
-        # 🛠️ [버그 수정] --input target 옵션을 명시하여 jar 파일들의 위치를 깃허브 서버에 정확히 알려줍니다.
+        # 🛠️ [최종 버그 수정] 파일 이름(demo1-1.0-SNAPSHOT)을 직접 적는 대신, target 폴더 내부의 모든 jar를 자동으로 읽어오도록 지정합니다.
         run: |
-          jpackage --type exe --name "TheProject" --input target --runtime-image target/app --main-jar demo1-1.0-SNAPSHOT.jar --main-class part.demo1.HelloApplication
+          jpackage --type exe --name "TheProject" --input target --runtime-image target/app --main-class part.demo1.HelloApplication
 
       - name: Upload Installer Artifact
         uses: actions/upload-artifact@v4

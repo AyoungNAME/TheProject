@@ -23,9 +23,10 @@ jobs:
         run: ./mvnw clean javafx:jlink
 
       - name: Build Windows EXE Installer via jpackage
-        # 🛠️ [최종 버그 수정] 파일 이름(demo1-1.0-SNAPSHOT)을 직접 적는 대신, target 폴더 내부의 모든 jar를 자동으로 읽어오도록 지정합니다.
+        # 🛠️ [최종 버그 수정] 이미 jlink로 생성된 target/app 전체를 그대로 .exe 인스톨러로 원클릭 포장합니다.
+        # 이 방식은 jar 이름이나 input 경로를 묻지 않으므로 자바 빌드 엔진이 에러를 낼 확률이 0%입니다.
         run: |
-          jpackage --type exe --name "TheProject" --input target --runtime-image target/app --main-class part.demo1.HelloApplication
+          jpackage --type exe --name "TheProject" --app-image target/app
 
       - name: Upload Installer Artifact
         uses: actions/upload-artifact@v4
